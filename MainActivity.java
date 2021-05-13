@@ -1,99 +1,75 @@
-package must.ac.ug.csce.evelyne.eve004progcolorswap;
+package must.ac.ug.csce.evelyne.eve004xmlcolorswap;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
-import android.R.color;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.Button;
 import android.widget.TextView;
-import  android.widget.Button;
-import  android.*;
-import android.graphics.Color;
-import java.util.Random;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+import java.util.Random;
+
+public class MainActivity<MyBroadcastReceiver> extends AppCompatActivity {
+    TextView textView;
+    Button button;
+    float red, blue, green;
+    private MyReceiver eve;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        // Receive broadcast from External App
+        IntentFilter intentFilter = new IntentFilter("com.must.ac.ug.csce.evelyne.eve004progcolorswap");
+        eve = new MyReceiver();
+        registerReceiver(eve, intentFilter);
 
-
-        Button button = new Button(this);
-        Button broadbtn = new Button(this);
-        //button.setPadding(200,200,200,200);
-        button.setText("Tap Me!");
-
-        broadbtn.setText("BroadCast");
-
-
-        TextView textView = new TextView(this);
-        textView.setText("Tap to Change Color");
+        TextView textview = (TextView) findViewById(R.id.tV);
+        button = (Button) findViewById(R.id.btn1);
 
         final Random random = new Random();
-
+        //button.setVisibility(View.VISIBLE);
         button.setOnClickListener((v) -> {
             float red = random.nextFloat();
 
             float green = random.nextFloat();
             float blue = random.nextFloat();
-            textView.setText("r" + String.valueOf(red) + "   g" + String.valueOf(green + " b" + String.valueOf(blue)));
-            textView.setTextColor(Color.rgb(red, green, blue));
+            textview.setText("r" + String.valueOf(red) + "   g" + String.valueOf(green + " b" + String.valueOf(blue)));
+            textview.setTextColor(Color.rgb(red, green, blue));
             //txt.setTextColor(Color);
 
-
-
         });
-        broadbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message="Broadcast Message";
-                Intent eve= new Intent();
-                String m = "Its a Broadcast Message";
-                Intent intent = new Intent();
-                intent.setAction("com.must.ac.ug.csce.evelyne.eve004progcolorswap");
-                intent.putExtra("message",m);
-                intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                //intent.setComponent(new ComponentName("package must.ac.ug.csce.evelyne.eve004xmlcolorswap","package must.ac.ug.csce.evelyne.eve004xmlcolorswap.MainActivity"));
-               //broadbtn.setText("BBBBB");
-                sendBroadcast(intent);
-            }
-        });
-
-
-        LinearLayout ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-
-        ll.addView(textView);
-        ll.addView(button);
-        ll.addView(broadbtn);
-        setContentView(ll);
 
     }
-
-
-
-
 }
 
 
+    class MyReceiver extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent){
+            String message=intent.getStringExtra("message");
+
+            if (intent.getAction().equals("com.must.ac.ug.csce.evelyne.eve004progcolorswap")) {
+                // Display message
+                Toast.makeText(context, ""+message+"New Broad cast",Toast.LENGTH_LONG).show();
+            }
 
 
+
+
+
+        }
+
+}
